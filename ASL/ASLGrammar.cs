@@ -20,6 +20,8 @@ namespace LiveSplit.ASL
             NonGrammarTerminals.Add(single_line_comment);
             NonGrammarTerminals.Add(delimited_comment);
 
+            var reference = new KeyTerm("reference", "reference");
+            var usingTerm = new KeyTerm("using", "using");
             var state = new KeyTerm("state", "state");
             var init = new KeyTerm("init", "init");
             var exit = new KeyTerm("exit", "exit");
@@ -35,8 +37,12 @@ namespace LiveSplit.ASL
             var semi = ToTerm(";", "semi");
 
             var root = new NonTerminal("root");
+            var reference_def = new NonTerminal("referenceDef");
+            var using_def = new NonTerminal("usingDef");
             var state_def = new NonTerminal("stateDef");
             var version = new NonTerminal("version");
+            var reference_list = new NonTerminal("referenceList");
+            var using_list = new NonTerminal("usingList");
             var state_list = new NonTerminal("stateList");
             var method_list = new NonTerminal("methodList");
             var var_list = new NonTerminal("varList");
@@ -47,11 +53,15 @@ namespace LiveSplit.ASL
             var offset = new NonTerminal("offset");
             var method_type = new NonTerminal("methodType");
 
-            root.Rule = state_list + method_list;
+            root.Rule = reference_list + using_list + state_list + method_list;
             version.Rule = (comma + string_lit) | Empty;
+            reference_def.Rule = reference + string_lit;
+            using_def.Rule = usingTerm + string_lit;
             state_def.Rule = state + "(" + string_lit + version + ")" + "{" + var_list + "}";
             state_list.Rule = MakeStarRule(state_list, state_def);
             method_list.Rule = MakeStarRule(method_list, method);
+            reference_list.Rule = MakeStarRule(reference_list, reference_def);
+            using_list.Rule = MakeStarRule(using_list, using_def);
             var_list.Rule = MakeStarRule(var_list, semi, var);
             module.Rule = (string_lit + comma) | Empty;
             var.Rule = (identifier + identifier + ":" + module + offset_list) | Empty;

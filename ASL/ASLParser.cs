@@ -30,6 +30,8 @@ namespace LiveSplit.ASL
             var root_childs = tree.Root.ChildNodes;
             var methods_node = root_childs.First(x => x.Term.Name == "methodList");
             var states_node = root_childs.First(x => x.Term.Name == "stateList");
+            var usings_node = root_childs.First(x => x.Term.Name == "usingList");
+            var reference_node = root_childs.First(x => x.Term.Name == "referenceList");
 
             var states = new Dictionary<string, List<ASLState>>();
 
@@ -68,6 +70,14 @@ namespace LiveSplit.ASL
                 states[process_name].Add(state);
             }
 
+            var references = reference_node.ChildNodes.Select(x => x.ChildNodes.Last().Token.ValueString);
+
+            var usings = "";
+            foreach (var item in usings_node.ChildNodes)
+            {
+                usings += $"using {item.ChildNodes.Last().Token.ValueString};\n";
+            }
+
             var methods = new ASLScript.Methods();
 
             foreach (var method in methods_node.ChildNodes[0].ChildNodes)
@@ -75,7 +85,7 @@ namespace LiveSplit.ASL
                 var body = (string)method.ChildNodes[2].Token.Value;
                 var method_name = (string)method.ChildNodes[0].Token.Value;
                 var line = method.ChildNodes[2].Token.Location.Line + 1;
-                var script = new ASLMethod(body, method_name, line)
+                var script = new ASLMethod(body, method_name, line, usings, references)
                 {
                     ScriptMethods = methods
                 };

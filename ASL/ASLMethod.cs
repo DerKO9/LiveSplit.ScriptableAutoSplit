@@ -23,7 +23,7 @@ namespace LiveSplit.ASL
 
         private dynamic _compiled_code;
 
-        public ASLMethod(string code, string name = null, int script_line = 0)
+        public ASLMethod(string code, string name = null, int script_line = 0, string usings = null, IEnumerable<string> references = null)
         {
             if (code == null)
                 throw new ArgumentNullException(nameof(code));
@@ -53,6 +53,7 @@ using System.Windows.Forms;
 using LiveSplit.ComponentUtil;
 using LiveSplit.Model;
 using LiveSplit.Options;
+{ usings }
 public class CompiledScript
 {{
     public string version;
@@ -92,6 +93,13 @@ public class CompiledScript
                 parameters.ReferencedAssemblies.Add("System.Xml.Linq.dll");
                 parameters.ReferencedAssemblies.Add("Microsoft.CSharp.dll");
                 parameters.ReferencedAssemblies.Add("LiveSplit.Core.dll");
+                if (references != null)
+                {
+                    foreach (var reference in references)
+                    {
+                        parameters.ReferencedAssemblies.Add(reference);
+                    }
+                }
 
                 var res = provider.CompileAssemblyFromSource(parameters, source);
                 if (res.Errors.HasErrors)
