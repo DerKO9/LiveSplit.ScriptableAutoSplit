@@ -45,21 +45,34 @@ namespace LiveSplit.ASL
 
                 foreach (var value_definition_node in value_definition_nodes.Where(x => x.ChildNodes.Count > 0))
                 {
-                    var child_nodes = value_definition_node.ChildNodes;
-                    var type = (string)child_nodes[0].Token.Value;
-                    var identifier = (string)child_nodes[1].Token.Value;
-                    var module =
-                        child_nodes[3].ChildNodes.Take(1).Select(x => (string)x.Token.Value).FirstOrDefault() ??
-                        string.Empty;
-                    var module_base = child_nodes[4].ChildNodes.Select(x => (int)x.Token.Value).First();
-                    var offsets = child_nodes[4].ChildNodes.Skip(1).Select(x => (int)x.Token.Value).ToArray();
-                    var value_definition = new ASLValueDefinition()
+                    var a = value_definition_node.ChildNodes.Single();
+                    if (a.ToString() == "deepPointer")
                     {
-                        Identifier = identifier,
-                        Type = type,
-                        Pointer = new DeepPointer(module, module_base, offsets)
-                    };
-                    state.ValueDefinitions.Add(value_definition);
+                        var child_nodes = a.ChildNodes;
+                        var type = (string)child_nodes[0].Token.Value;
+                        var identifier = (string)child_nodes[1].Token.Value;
+                        var module =
+                            child_nodes[3].ChildNodes.Take(1).Select(x => (string)x.Token.Value).FirstOrDefault() ??
+                            string.Empty;
+                        var module_base = child_nodes[4].ChildNodes.Select(x => (int)x.Token.Value).First();
+                        var offsets = child_nodes[4].ChildNodes.Skip(1).Select(x => (int)x.Token.Value).ToArray();
+                        var value_definition = new ASLValueDefinition()
+                        {
+                            Identifier = identifier,
+                            Type = type,
+                            Pointer = new DeepPointer(module, module_base, offsets)
+                        };
+                        state.ValueDefinitions.Add(value_definition);
+                    }
+                    else
+                    {
+                        var child_nodes = a.ChildNodes;
+                        var type = (string)child_nodes[0].Token.Value;
+                        var identifier = (string)child_nodes[1].Token.Value;
+                        var module =
+                            child_nodes[3].ChildNodes.Take(1).Select(x => (string)x.Token.Value).FirstOrDefault() ??
+                            string.Empty;
+                    }
                 }
 
                 state.GameVersion = version;

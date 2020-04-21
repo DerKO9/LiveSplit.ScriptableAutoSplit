@@ -39,10 +39,13 @@ namespace LiveSplit.ASL
             var version = new NonTerminal("version");
             var state_list = new NonTerminal("stateList");
             var method_list = new NonTerminal("methodList");
+            var sig_pointer = new NonTerminal("sigPointer");
+            var deep_pointer = new NonTerminal("deepPointer");
             var var_list = new NonTerminal("varList");
             var var = new NonTerminal("var");
             var module = new NonTerminal("module");
             var method = new NonTerminal("method");
+            var sig_target = new NonTerminal("sigTarget");
             var offset_list = new NonTerminal("offsetList");
             var offset = new NonTerminal("offset");
             var method_type = new NonTerminal("methodType");
@@ -54,8 +57,11 @@ namespace LiveSplit.ASL
             method_list.Rule = MakeStarRule(method_list, method);
             var_list.Rule = MakeStarRule(var_list, semi, var);
             module.Rule = (string_lit + comma) | Empty;
-            var.Rule = (identifier + identifier + ":" + module + offset_list) | Empty;
+            deep_pointer.Rule = identifier + identifier + ":" + module + offset_list;
+            sig_pointer.Rule = identifier + identifier + ":" + module + sig_target;
+            var.Rule = deep_pointer | sig_pointer | Empty;
             method.Rule = (method_type + "{" + code + "}") | Empty;
+            sig_target.Rule = string_lit + comma + number;
             offset_list.Rule = MakePlusRule(offset_list, comma, offset);
             offset.Rule = number;
             method_type.Rule = init | exit | update | start | split | isLoading | gameTime | reset | startup | shutdown;
