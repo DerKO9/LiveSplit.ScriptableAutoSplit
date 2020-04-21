@@ -45,7 +45,7 @@ namespace LiveSplit.ASL
 
                 foreach (var value_definition_node in value_definition_nodes.Where(x => x.ChildNodes.Count > 0))
                 {
-                    var a = value_definition_node.ChildNodes.Single();
+                    var a = value_definition_node.ChildNodes.Single(); // RENAME ME
                     if (a.ToString() == "deepPointer")
                     {
                         var child_nodes = a.ChildNodes;
